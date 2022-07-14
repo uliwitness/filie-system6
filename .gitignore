@@ -50,3 +50,10 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+#SheepShaver Emulator
+.finf/
+
+#CodeWarrior 10 Gold
+*.dbg
+*.SYM
