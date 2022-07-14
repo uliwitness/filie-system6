@@ -8,6 +8,8 @@ To build this, you need
 * A Mac to run it on (or an emulator like Basilisk II or SheepShaver)
 * StuffIt 5 to unpack the `.sit` files
 * A tool to copy the `.rsrc` files back from the data fork into the resource fork.
+  The HyperCard stack in the `CheapVersionControl.sit` archive in this repository
+  will do it if used to "Revert" this folder into a new folder.
 
 The completed app should run as far back as System 6.
 
