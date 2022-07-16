@@ -7,13 +7,9 @@ To build this, you need
 * CodeWarrior 10 Gold for Macintosh System 7.0
 * A Mac to run it on (or an emulator like Basilisk II or SheepShaver)
 * StuffIt 5 to unpack the `.sit` files
-* A tool to copy the `.rsrc` files back from the data fork into the resource fork.
-  The HyperCard stack in the `CheapVersionControl.sit` archive in this repository
-  will do it if used to "Revert" this folder into a new folder.
+* The HyperCard stack in the `CheapVersionControl.sit` archive in this repository
+  to copy the `.rsrc` files back from the data fork into the resource fork, and
+  to convert the source files back from UTF8 with LF to MacRoman with CR line endings.
+  (Its "Revert" button can be used to do this)
 
 The completed app should run as far back as System 6.
-
-# The text files are all one line?!
-The text files are encoded in MacRoman with MacOS line endings (ASCII 13,
-Carriage Return), which Github doesn't support. If you click on "Raw" most
-browsers will show them correctly anyway.
