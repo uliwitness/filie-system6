@@ -5,7 +5,7 @@
 
 class CListManagerWindowAttachment : public CWindowAttachment {
 public:
-	CListManagerWindowAttachment(CWindow *wd, Rect *box, bool leaveGrowRoom = false, short ldefID = 0);
+	CListManagerWindowAttachment(CWindow *wd, Rect *box, short ldefID = 0);
 	~CListManagerWindowAttachment();
 	
 	void AddRow(const void* data, short length);

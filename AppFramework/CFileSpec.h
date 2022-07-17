@@ -7,9 +7,9 @@ class CFileSpec {
 public:
 	short vRefNum;
 	long parID;
-	Str255 name;
+	Str63 name;
 	
-	CFileSpec(short vrn = 0, short pid = 0, Str255 nm = "\p");
+	CFileSpec(short vrn = 0, short pid = 0, Str63 nm = "\p");
 	CFileSpec(FSSpec* fssp);
 	
 protected:

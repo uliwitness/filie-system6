@@ -5,7 +5,7 @@
 #include <string.h>
 
 
-CListManagerWindowAttachment::CListManagerWindowAttachment(CWindow *wd, Rect *box, bool leaveGrowRoom, short ldefID)
+CListManagerWindowAttachment::CListManagerWindowAttachment(CWindow *wd, Rect *box, short ldefID)
 : CWindowAttachment(wd) {
 	WindowPtr window = wd->ToMac();
 	StPortChanger portChanger(window);
@@ -16,7 +16,7 @@ CListManagerWindowAttachment::CListManagerWindowAttachment(CWindow *wd, Rect *bo
 	Rect dataBounds = { 0, 0, 0, 1};
 	Point cellSize = { 0, 0 };
 	Point cell = { 0, 0 };
-	mList = LNew(&bodyBox, &dataBounds, cellSize, ldefID, window, true, leaveGrowRoom, true, true);
+	mList = LNew(&bodyBox, &dataBounds, cellSize, ldefID, window, true, true, false, true);
 }
 
 CListManagerWindowAttachment::~CListManagerWindowAttachment() {

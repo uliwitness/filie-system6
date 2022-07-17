@@ -4,6 +4,7 @@
 #include <A4Stuff.h>
 #include <math.h>
 #include "FileLDEF.h"
+#include "FileLDEFData.h"
 
 pascal void main(short message, Boolean selected, Rect *cellRect, Cell theCell, short dataOffset,
 				 short dataLen, ListHandle theList) {
@@ -11,13 +12,24 @@ pascal void main(short message, Boolean selected, Rect *cellRect, Cell theCell, 
 	
 	switch (message) {
 		case lInitMsg:
+			if ((**theList).cellSize.v < 34) {
+				(**theList).cellSize.v = 34;
+			}
 			break;
 			
 		case lDrawMsg: {
 			RgnHandle oldClip = NewRgn();
-			FSSpec spec = {};
 			PenState state = {};
+			struct FileEntry data = {};
+			Rect iconRect = *cellRect;
+			short topOffset = (cellRect->bottom - cellRect->top - 32) / 2;
 			
+			BlockMove((*(**theList).cells) + dataOffset, &data, sizeof(data));
+			
+			iconRect.left += 4;
+			iconRect.right = iconRect.left + 32;
+			iconRect.top += topOffset;
+			iconRect.bottom = iconRect.top + 32;
 			GetClip(oldClip);
 			GetPenState(&state);
 			ClipRect(cellRect);
@@ -25,9 +37,11 @@ pascal void main(short message, Boolean selected, Rect *cellRect, Cell theCell, 
 			ForeColor(whiteColor);
 			PaintRect(cellRect);
 			ForeColor(blackColor);
-			BlockMove((*(**theList).cells) + dataOffset, &spec, sizeof(FSSpec));
-			MoveTo(cellRect->left + 4, cellRect->bottom - 4);
-			DrawString(spec.name);
+			MoveTo(iconRect.right + 4, cellRect->bottom - 4);
+			DrawString(data.file.name);
+			if (data.icon) {
+				PlotIconHandle(&iconRect, atNone, ttNone, data.icon);
+			}
 			
 			if (selected) {
 				LMSetHiliteMode(LMGetHiliteMode() & ~(1 << 7));

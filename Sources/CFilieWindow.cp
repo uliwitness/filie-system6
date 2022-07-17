@@ -1,8 +1,10 @@
 #include "CFilieWindow.h"
 #include "CListManagerWindowAttachment.h"
 #include "CApplication.h"
+#include "FileLDEFData.h"
 #include <string.h>
 #include <limits.h>
+#include <stdio.h>
 
 
 enum {
@@ -20,37 +22,62 @@ CFilieWindow::CFilieWindow(CFileSpec *fileOrFolder, CCommandHandler* parent)
 }
 
 
+static Handle sDiskIcon = NULL;
+static Handle sFolderIcon = NULL;
+static Handle sFileIcon = NULL;
+static Handle sApplicationIcon = NULL;
+
+
 void CFilieWindow::CreateWindow() {
 	CWindow::CreateWindow();
+	
+	if (!sDiskIcon) {
+		sDiskIcon = GetResource('ICN#', floppyIconResource);
+		DetachResource(sDiskIcon);
+		HNoPurge(sDiskIcon);
+		sFolderIcon = GetResource('ICN#', genericFolderIconResource);
+		DetachResource(sFolderIcon);
+		HNoPurge(sFolderIcon);
+		sFileIcon = GetResource('ICN#', genericDocumentIconResource);
+		DetachResource(sFileIcon);
+		HNoPurge(sFileIcon);
+		sApplicationIcon = GetResource('ICN#', genericApplicationIconResource);
+		DetachResource(sApplicationIcon);
+		HNoPurge(sApplicationIcon);
+		printf("icons %p %p %p %p\n", sDiskIcon, sFolderIcon, sFileIcon, sApplicationIcon);
+	}
 
+	struct FileEntry fileEntry = {};
 	Rect listRect = mWindow->portRect;
-	mList = new CListManagerWindowAttachment(this, &listRect, true, 700);
+	listRect.top += 32;
+	listRect.bottom -= 15;
+	mList = new CListManagerWindowAttachment(this, &listRect, 700);
 	mList->SetAutoPositionFlags(kAutoPositionFlagResizeHorz | kAutoPositionFlagResizeVert);
 	mList->SetCommand('ldbl');
 	
 	if (mListVolumes) {
 		HParamBlockRec paramBlock = {};
-		Str255 volName = {};
-		paramBlock.volumeParam.ioNamePtr = volName;
 		
 		for (paramBlock.volumeParam.ioVolIndex = 1; paramBlock.volumeParam.ioVolIndex <= SHRT_MAX; ++paramBlock.volumeParam.ioVolIndex) {
+			paramBlock.volumeParam.ioNamePtr = fileEntry.file.name;
 			OSErr err = PBHGetVInfo(&paramBlock, false);
 			if (err != noErr) {
 				break;
 			}
 			
-			CFileSpec spec(paramBlock.volumeParam.ioVRefNum, fsRtParID, volName);
-			mList->AddRow(&spec, sizeof(spec));
+			fileEntry.icon = sDiskIcon;
+			fileEntry.file.vRefNum = paramBlock.volumeParam.ioVRefNum;
+			fileEntry.file.parID = fsRtParID;
+			mList->AddRow(&fileEntry, sizeof(fileEntry));
 		}
 	} else {
 		CInfoPBRec	catInfo = {0};
-		Str255		fileNameBuffer = {0};
 		
-		BlockMove(mFileOrFolder.name, fileNameBuffer, mFileOrFolder.name[0] + 1);	
+		BlockMove(mFileOrFolder.name, fileEntry.file.name, mFileOrFolder.name[0] + 1);	
 		catInfo.dirInfo.ioVRefNum = mFileOrFolder.vRefNum;
 		catInfo.dirInfo.ioDrDirID = mFileOrFolder.parID;
 		catInfo.dirInfo.ioFDirIndex = 0;
-		catInfo.dirInfo.ioNamePtr = fileNameBuffer;
+		catInfo.dirInfo.ioNamePtr = fileEntry.file.name;
 		
 		OSErr err = PBGetCatInfoSync(&catInfo);
 		if (err != noErr) {
@@ -62,11 +89,11 @@ void CFilieWindow::CreateWindow() {
 	
 		for (int dirIndex = 1; dirIndex < SHRT_MAX; ++dirIndex) {
 			
-			fileNameBuffer[0] = 0;
+			fileEntry.file.name[0] = 0;
 			catInfo.dirInfo.ioVRefNum = vRefNum;
 			catInfo.dirInfo.ioDrDirID = dirID;
 			catInfo.dirInfo.ioFDirIndex = dirIndex;
-			catInfo.dirInfo.ioNamePtr = fileNameBuffer;
+			catInfo.dirInfo.ioNamePtr = fileEntry.file.name;
 
 			err = PBGetCatInfoSync(&catInfo);
 			if (err == fnfErr) {
@@ -83,11 +110,19 @@ void CFilieWindow::CreateWindow() {
 			Boolean isFolder = (catInfo.hFileInfo.ioFlAttrib & kFolderBit) == kFolderBit;
 			
 			if (isFolder) {
-				CFileSpec fldSpec(catInfo.dirInfo.ioVRefNum, catInfo.dirInfo.ioDrParID, catInfo.dirInfo.ioNamePtr);
-				mList->AddRow(&fldSpec, sizeof(fldSpec));
+				fileEntry.icon = sFolderIcon;
+				fileEntry.file.vRefNum = catInfo.dirInfo.ioVRefNum;
+				fileEntry.file.parID = catInfo.dirInfo.ioDrParID;
+				mList->AddRow(&fileEntry, sizeof(fileEntry));
 			} else {
-				CFileSpec filSpec(catInfo.hFileInfo.ioVRefNum, catInfo.hFileInfo.ioDirID, catInfo.hFileInfo.ioNamePtr);
-				mList->AddRow(&filSpec, sizeof(filSpec));
+				if (catInfo.hFileInfo.ioFlFndrInfo.fdType == 'APPL') {
+					fileEntry.icon = sApplicationIcon;
+				} else {
+					fileEntry.icon = sFileIcon;
+				}
+				fileEntry.file.vRefNum = catInfo.hFileInfo.ioVRefNum;
+				fileEntry.file.parID = catInfo.hFileInfo.ioDirID;
+				mList->AddRow(&fileEntry, sizeof(fileEntry));
 			}
 			
 		}
