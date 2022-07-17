@@ -11,7 +11,7 @@ class CControl;
 // Class for one window:
 class CWindow : public CCommandHandler {
 public:
-	CWindow(Rect *box, CCommandHandler *parent = NULL);
+	CWindow(short resID, CCommandHandler *parent = NULL);
 	virtual ~CWindow();
 
 	virtual void CreateWindow();
@@ -57,7 +57,7 @@ protected:
 	void AddAttachment(CWindowAttachment * att);
 	void AddControl(CControl *ctl);
 
-	Rect mInitialRect;
+	short mResID;
 	WindowPtr mWindow;
 	CWindowAttachment *mAttachments; // Linked list of window attachments (e.g. list boxes, Text boxes etc.)
 	CControl *mControls; // Linked list of control objects.

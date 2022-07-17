@@ -2,10 +2,8 @@
 #include "CControl.h"
 #include "SMenuCommands.h"
 
-static Rect gDummyBox = {};
-
 CDialog::CDialog(short dlogResourceID, CCommandHandler* parent)
-	: CWindow(&gDummyBox, parent), mResID(dlogResourceID) {
+	: CWindow(dlogResourceID, parent) {
 }
 
 CDialog::~CDialog() {

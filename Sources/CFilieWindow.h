@@ -7,7 +7,7 @@ class CListManagerWindowAttachment;
 
 class CFilieWindow : public CWindow {
 public:
-	CFilieWindow(Rect *box, CFileSpec *fileOrFolder = NULL, CCommandHandler* parent = NULL);
+	CFilieWindow(CFileSpec *fileOrFolder = NULL, CCommandHandler* parent = NULL);
 
 	virtual void CreateWindow();
 	

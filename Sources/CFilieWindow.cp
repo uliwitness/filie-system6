@@ -9,8 +9,8 @@ enum {
 	kFolderBit = (1 << 4)
 };
 
-CFilieWindow::CFilieWindow(Rect *box, CFileSpec *fileOrFolder, CCommandHandler* parent)
-: CWindow(box, parent) {
+CFilieWindow::CFilieWindow(CFileSpec *fileOrFolder, CCommandHandler* parent)
+: CWindow(128, parent) {
 	if (fileOrFolder) {
 		mFileOrFolder = *fileOrFolder;
 		mListVolumes = false;
@@ -39,7 +39,7 @@ void CFilieWindow::CreateWindow() {
 				break;
 			}
 			
-			CFileSpec spec(paramBlock.volumeParam.ioVRefNum, fsRtDirID, "\p");
+			CFileSpec spec(paramBlock.volumeParam.ioVRefNum, fsRtParID, volName);
 			mList->AddRow(&spec, sizeof(spec));
 		}
 	} else {
@@ -83,8 +83,7 @@ void CFilieWindow::CreateWindow() {
 			Boolean isFolder = (catInfo.hFileInfo.ioFlAttrib & kFolderBit) == kFolderBit;
 			
 			if (isFolder) {
-				// This case generates something wrong:
-				CFileSpec fldSpec(catInfo.dirInfo.ioVRefNum, catInfo.dirInfo.ioDrDirID, "\p"/*catInfo.dirInfo.ioNamePtr*/);
+				CFileSpec fldSpec(catInfo.dirInfo.ioVRefNum, catInfo.dirInfo.ioDrParID, catInfo.dirInfo.ioNamePtr);
 				mList->AddRow(&fldSpec, sizeof(fldSpec));
 			} else {
 				CFileSpec filSpec(catInfo.hFileInfo.ioVRefNum, catInfo.hFileInfo.ioDirID, catInfo.hFileInfo.ioNamePtr);
@@ -102,6 +101,6 @@ void CFilieWindow::HandleCommand(OSType command, short menuID, short itemIndex) 
 		mList->GetSelectedRow(&spec, &len);
 		CApplication::Singleton()->GetDelegate()->OpenDocument(&spec);
 	} else {
-		mNextHandler->HandleCommand(command, menuID, itemIndex);
+		CWindow::HandleCommand(command, menuID, itemIndex);
 	}
 }

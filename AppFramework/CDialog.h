@@ -22,6 +22,4 @@ public:
 	
 protected:
 	virtual void FreeWindow();
-
-	short mResID;
 };

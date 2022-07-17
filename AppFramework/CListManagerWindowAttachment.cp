@@ -16,7 +16,7 @@ CListManagerWindowAttachment::CListManagerWindowAttachment(CWindow *wd, Rect *bo
 	Rect dataBounds = { 0, 0, 0, 1};
 	Point cellSize = { 0, 0 };
 	Point cell = { 0, 0 };
-	mList = LNew(&bodyBox, &dataBounds, cellSize, ldefID, window, true, leaveGrowRoom, false, true);
+	mList = LNew(&bodyBox, &dataBounds, cellSize, ldefID, window, true, leaveGrowRoom, true, true);
 }
 
 CListManagerWindowAttachment::~CListManagerWindowAttachment() {

@@ -13,9 +13,9 @@
 
 class Control;
 
-CWindow::CWindow(Rect *box, CCommandHandler *parent)
+CWindow::CWindow(short resID, CCommandHandler *parent)
 : CCommandHandler(parent ? parent : CApplication::Singleton()->GetDelegate()),
-	mInitialRect(*box), mAttachments(NULL), mControls(NULL), mWindow(NULL) {
+	mResID(resID), mAttachments(NULL), mControls(NULL), mWindow(NULL) {
 }
 
 CWindow::~CWindow() {
@@ -53,12 +53,11 @@ void CWindow::CreateWindow() {
 	long version = 0;
 	if (Gestalt(gestaltQuickdrawVersion, &version) == noErr
 		&& LoWord(version) >= gestalt8BitQD) {
-		mWindow = NewCWindow(NULL, &mInitialRect, "\p", true, zoomDocProc, 
-							 (WindowPtr) -1, true, (long)this);
+		mWindow = GetNewCWindow(mResID, NULL, (WindowPtr) -1);
 	} else {
-		mWindow = NewWindow(NULL, &mInitialRect, "\p", true, zoomDocProc, 
-						 	(WindowPtr) -1, true, (long)this);
+		mWindow = GetNewWindow(mResID, NULL, (WindowPtr) -1);
 	}
+	SetWRefCon(mWindow, (long)this);
 }
 
 void CWindow::HandleMouseDown(const EventRecord &event) {

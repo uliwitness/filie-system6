@@ -1,6 +1,7 @@
 #include "CFilieApplicationDelegate.h"
 #include "CFilieWindow.h"
 #include "CDialog.h"
+#include "ResourceIDs.h"
 
 CFilieApplicationDelegate::CFilieApplicationDelegate(CCommandHandler* parent)
 : CApplicationDelegate(parent) {
@@ -8,15 +9,16 @@ CFilieApplicationDelegate::CFilieApplicationDelegate(CCommandHandler* parent)
 }
 
 void CFilieApplicationDelegate::OpenUntitledDocument() {
-	Rect windRect = { 100, 100, 580, 740 };
-	CWindow *window = new CFilieWindow(&windRect);
+	CWindow *window = new CFilieWindow();
 	window->CreateWindow();
-	window->SetUniqueTitle("\pMy Computer");
+	
+	Str255 wTitle;
+	GetIndString(wTitle, kFilieWindowStrings, kFilieWindowStringsMyComputer);
+	window->SetUniqueTitle(wTitle);
 }
 
 void CFilieApplicationDelegate::OpenDocument(CFileSpec *fileOrFolder) {
-	Rect windRect = { 100, 100, 580, 740 };
-	CWindow *window = new CFilieWindow(&windRect, fileOrFolder);
+	CWindow *window = new CFilieWindow(fileOrFolder);
 	window->CreateWindow();
 	window->SetUniqueTitle(fileOrFolder->name);
 }
