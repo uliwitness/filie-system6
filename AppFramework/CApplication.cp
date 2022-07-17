@@ -95,8 +95,7 @@ void CApplication::Run() {
 			for(short x = 1; x <= count; ++x) {
 				AppFile appFile = {};
 				GetAppFiles(x, &appFile);
-				FSSpec file = {};
-				FSMakeFSSpec(appFile.vRefNum, 0, appFile.fName, &file);
+				CFileSpec file(appFile.vRefNum, 0, appFile.fName);
 				mDelegate->OpenDocument(&file);
 				ClrAppFiles(x);
 			}
@@ -297,7 +296,8 @@ pascal OSErr CApplication::HandleODoc(const AppleEvent *theAppleEvent, AppleEven
 			printf("Asked to open %ld files\n", itemsInList);
 			for(long x = 1; x <= itemsInList; ++x) {
 				myErr = AEGetNthPtr(&docList, x, typeFSS, &keywd, &returnedType, &myFSS, sizeof(myFSS), &actualSize);
-				self->mDelegate->OpenDocument(&myFSS);
+				CFileSpec specToOpen(&myFSS);
+				self->mDelegate->OpenDocument(&specToOpen);
 			}
 		}
 		

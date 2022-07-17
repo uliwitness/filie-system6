@@ -1,12 +1,13 @@
 #pragma once
 
 #include "CWindow.h"
+#include "CFileSpec.h"
 
 class CListManagerWindowAttachment;
 
 class CFilieWindow : public CWindow {
 public:
-	CFilieWindow(Rect *box, FSSpec *fileOrFolder = NULL, CCommandHandler* parent = NULL);
+	CFilieWindow(Rect *box, CFileSpec *fileOrFolder = NULL, CCommandHandler* parent = NULL);
 
 	virtual void CreateWindow();
 	
@@ -15,5 +16,5 @@ public:
 protected:
 	CListManagerWindowAttachment *mList;
 	Boolean mListVolumes;
-	FSSpec mFileOrFolder;
+	CFileSpec mFileOrFolder;
 };

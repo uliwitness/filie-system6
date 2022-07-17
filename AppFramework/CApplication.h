@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CCommandHandler.h"
+#include "CFileSpec.h"
 #include <Types.h>
 
 class CApplicationDelegate : public CCommandHandler {
@@ -9,7 +10,7 @@ public:
 
 	virtual void StartUp() {}
 	virtual void OpenUntitledDocument() {}
-	virtual void OpenDocument(FSSpec *inFile) {}
+	virtual void OpenDocument(CFileSpec *inFile) {}
 	virtual bool ShouldShutDown() { return true; }
 };
 

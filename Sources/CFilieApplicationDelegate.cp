@@ -14,7 +14,7 @@ void CFilieApplicationDelegate::OpenUntitledDocument() {
 	window->SetUniqueTitle("\pMy Computer");
 }
 
-void CFilieApplicationDelegate::OpenDocument(FSSpec *fileOrFolder) {
+void CFilieApplicationDelegate::OpenDocument(CFileSpec *fileOrFolder) {
 	Rect windRect = { 100, 100, 580, 740 };
 	CWindow *window = new CFilieWindow(&windRect, fileOrFolder);
 	window->CreateWindow();
