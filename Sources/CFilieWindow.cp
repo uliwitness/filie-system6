@@ -44,10 +44,10 @@ void CFilieWindow::CreateWindow() {
 		sApplicationIcon = GetResource('ICN#', genericApplicationIconResource);
 		DetachResource(sApplicationIcon);
 		HNoPurge(sApplicationIcon);
-		printf("icons %p %p %p %p\n", sDiskIcon, sFolderIcon, sFileIcon, sApplicationIcon);
 	}
 
 	struct FileEntry fileEntry = {};
+	Str255 nameBuffer = {};
 	Rect listRect = mWindow->portRect;
 	listRect.top += 32;
 	listRect.bottom -= 15;
@@ -59,7 +59,7 @@ void CFilieWindow::CreateWindow() {
 		HParamBlockRec paramBlock = {};
 		
 		for (paramBlock.volumeParam.ioVolIndex = 1; paramBlock.volumeParam.ioVolIndex <= SHRT_MAX; ++paramBlock.volumeParam.ioVolIndex) {
-			paramBlock.volumeParam.ioNamePtr = fileEntry.file.name;
+			paramBlock.volumeParam.ioNamePtr = nameBuffer;
 			OSErr err = PBHGetVInfo(&paramBlock, false);
 			if (err != noErr) {
 				break;
@@ -68,16 +68,17 @@ void CFilieWindow::CreateWindow() {
 			fileEntry.icon = sDiskIcon;
 			fileEntry.file.vRefNum = paramBlock.volumeParam.ioVRefNum;
 			fileEntry.file.parID = fsRtParID;
+			BlockMove(nameBuffer, fileEntry.file.name, sizeof(fileEntry.file.name));
 			mList->AddRow(&fileEntry, sizeof(fileEntry));
 		}
 	} else {
 		CInfoPBRec	catInfo = {0};
 		
-		BlockMove(mFileOrFolder.name, fileEntry.file.name, mFileOrFolder.name[0] + 1);	
+		BlockMove(mFileOrFolder.name, nameBuffer, mFileOrFolder.name[0] + 1);	
 		catInfo.dirInfo.ioVRefNum = mFileOrFolder.vRefNum;
 		catInfo.dirInfo.ioDrDirID = mFileOrFolder.parID;
 		catInfo.dirInfo.ioFDirIndex = 0;
-		catInfo.dirInfo.ioNamePtr = fileEntry.file.name;
+		catInfo.dirInfo.ioNamePtr = nameBuffer;
 		
 		OSErr err = PBGetCatInfoSync(&catInfo);
 		if (err != noErr) {
@@ -89,11 +90,11 @@ void CFilieWindow::CreateWindow() {
 	
 		for (int dirIndex = 1; dirIndex < SHRT_MAX; ++dirIndex) {
 			
-			fileEntry.file.name[0] = 0;
+			nameBuffer[0] = 0;
 			catInfo.dirInfo.ioVRefNum = vRefNum;
 			catInfo.dirInfo.ioDrDirID = dirID;
 			catInfo.dirInfo.ioFDirIndex = dirIndex;
-			catInfo.dirInfo.ioNamePtr = fileEntry.file.name;
+			catInfo.dirInfo.ioNamePtr = nameBuffer;
 
 			err = PBGetCatInfoSync(&catInfo);
 			if (err == fnfErr) {
@@ -109,6 +110,7 @@ void CFilieWindow::CreateWindow() {
 
 			Boolean isFolder = (catInfo.hFileInfo.ioFlAttrib & kFolderBit) == kFolderBit;
 			
+			BlockMove(nameBuffer, fileEntry.file.name, sizeof(fileEntry.file.name));
 			if (isFolder) {
 				fileEntry.icon = sFolderIcon;
 				fileEntry.file.vRefNum = catInfo.dirInfo.ioVRefNum;
