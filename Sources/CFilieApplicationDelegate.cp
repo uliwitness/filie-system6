@@ -18,9 +18,11 @@ void CFilieApplicationDelegate::OpenUntitledDocument() {
 }
 
 void CFilieApplicationDelegate::OpenDocument(CFileSpec *fileOrFolder) {
+	Str255 fileName = {};
+	BlockMove(fileOrFolder->name, fileName, fileOrFolder->name[0] + 1);
 	CWindow *window = new CFilieWindow(fileOrFolder);
 	window->CreateWindow();
-	window->SetUniqueTitle(fileOrFolder->name);
+	window->SetUniqueTitle(fileName);
 }
 
 void CFilieApplicationDelegate::HandleCommand(OSType command, short menuID, short itemIndex) {
