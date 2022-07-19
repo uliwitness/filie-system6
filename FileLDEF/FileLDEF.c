@@ -26,6 +26,7 @@ pascal void main(short message, Boolean selected, Rect *cellRect, Cell theCell, 
 			PenState state = {};
 			struct FileEntry data = {};
 			Rect iconRect = *cellRect;
+			FontInfo fontInfo = {};
 			short topOffset = (cellRect->bottom - cellRect->top - 32) / 2;
 			
 			BlockMove((*(**theList).cells) + dataOffset, &data, sizeof(data));
@@ -38,10 +39,12 @@ pascal void main(short message, Boolean selected, Rect *cellRect, Cell theCell, 
 			GetPenState(&state);
 			ClipRect(cellRect);
 			
+			GetFontInfo(&fontInfo);
+			
 			ForeColor(whiteColor);
 			PaintRect(cellRect);
 			ForeColor(blackColor);
-			MoveTo(iconRect.right + 4, cellRect->bottom - 4);
+			MoveTo(iconRect.right + 4, cellRect->bottom - (((iconRect.bottom -iconRect.top) -fontInfo.ascent -fontInfo.descent) / 2) - fontInfo.descent);
 			DrawString(data.file.name);
 			if (data.icon) {
 				PlotIconHandle(&iconRect, atNone, ttNone, data.icon);

@@ -25,6 +25,11 @@ CListManagerWindowAttachment::~CListManagerWindowAttachment() {
 }
 
 
+void CListManagerWindowAttachment::SetAutoDraw(Boolean state) {
+	LSetDrawingMode(state, mList);
+}
+
+
 void CListManagerWindowAttachment::AddRow(const void* data, short length) {
 	Point cell = { 0, 0 };
 	cell.v = (**mList).dataBounds.bottom;

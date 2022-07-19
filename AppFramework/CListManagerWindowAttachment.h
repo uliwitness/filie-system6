@@ -13,6 +13,8 @@ public:
 	
 	void SetCommand(OSType command) { mCommand = command; }
 	
+	void SetAutoDraw(Boolean state);
+	
 	virtual void Draw();
 	
 	virtual bool HandleMouseDown(const EventRecord &event);
